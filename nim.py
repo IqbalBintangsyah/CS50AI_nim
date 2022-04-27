@@ -2,6 +2,8 @@ import math
 import random
 import time
 
+from numpy import empty
+
 
 class Nim():
 
@@ -101,7 +103,10 @@ class NimAI():
         Return the Q-value for the state `state` and the action `action`.
         If no Q-value exists yet in `self.q`, return 0.
         """
-        return self.q.get((state, action))
+        if self.q.get((state, action)) is None:
+            return 0
+        else:
+            return self.q.get((state, action))
 
     def update_q_value(self, state, action, old_q, reward, future_rewards):
         """
@@ -132,7 +137,16 @@ class NimAI():
         Q-value in `self.q`. If there are no available actions in
         `state`, return 0.
         """
-        raise NotImplementedError
+        curr = Nim(state)
+        if curr.available_actions(state) is empty():
+            return 0
+        else:
+            best_reward = 0
+            for action in curr.available_actions(state):
+                temp = self.get_q_value(state, action)
+                if best_reward < temp:
+                    best_reward = temp
+            return best_reward
 
     def choose_action(self, state, epsilon=True):
         """
